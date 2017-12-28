@@ -9,6 +9,8 @@
 #include "IMU.h"
 #include "MPU6050.h"
 
+DigitalOut led1(LED1);
+
 void imu_thread(void){
   MPU6050 imu;
   i2c.frequency(400000);  // use fast (400 kHz) I2C
@@ -17,12 +19,13 @@ void imu_thread(void){
 
     if (0x68 == whoami) {
       pc.printf("I AM 0x%x\n\r", whoami);
+      led1 = !led1;
     } else {
       i2c.stop();
       i2c.start();
       pc.printf("I SHOULD BE 0x68\n\r");
     }
 
-    Thread::wait(5000);
+    Thread::wait(1000);
   }
 }
