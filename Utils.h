@@ -13,9 +13,9 @@
 #include "USBSerial.h"
 #include "I2C.h"
 
-extern USBSerial pc;
-
 #define PROJECT_NAME  "rtos_basic"
+
+extern USBSerial pc;
 
 void formatVersion(char *buildVersion);
 
