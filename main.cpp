@@ -1,25 +1,29 @@
-#include "mbed.h"
-#include "rtos.h"
-#include "USBSerial.h"
+#include "Utils.h"
+
+#include "IMU.h"
 
 DigitalOut led1(LED1);
-DigitalOut led2(LED2);
-USBSerial pc;
-Thread thread;
+Thread tLed, tImu;
 
-void led2_thread(void) {
+void led1_thread(void) {
   while (true) {
-    led2 = !led2;
-    Thread::wait(1000);
+    led1 = !led1;
+    Thread::wait(500);
   }
 }
 
 int main() {
-  thread.start(led2_thread);
+  Thread::wait(3000);
+  char ver[50];
+  formatVersion(ver);
+  pc.printf("Version %s %s\r\n", PROJECT_NAME, ver);
+  Thread::wait(1500);
+
+//  tLed.start(led1_thread);
+  tImu.start(imu_thread);
 
   while (true) {
-    pc.printf("OPAAA\r\n");
-    led1 = !led1;
-    Thread::wait(500);
+    pc.printf("Teste\r\n");
+    Thread::wait(1500);
   }
 }

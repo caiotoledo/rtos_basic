@@ -1,4 +1,4 @@
-main.o: ../main.cpp ../mbed_config.h ../Utils.h ../mbed/./mbed.h \
+Utils.o: ../Utils.cpp ../mbed_config.h ../Utils.h ../mbed/./mbed.h \
  ../mbed/./platform/mbed_toolchain.h \
  ../mbed/./platform/mbed_preprocessor.h ../mbed/./platform/platform.h \
  ../mbed/./platform/mbed_retarget.h ../mbed/./platform/mbed_toolchain.h \
@@ -77,4 +77,4 @@ main.o: ../main.cpp ../mbed_config.h ../Utils.h ../mbed/./mbed.h \
  ../USBDevice/USBDevice/USBDevice.h \
  ../USBDevice/USBDevice/USBDevice_Types.h ../USBDevice/USBDevice/USBHAL.h \
  ../USBDevice/USBDevice/USBEndpoints.h \
- ../USBDevice/USBSerial/CircBuffer.h ../mbed/drivers/I2C.h ../IMU.h
+ ../USBDevice/USBSerial/CircBuffer.h ../mbed/drivers/I2C.h
