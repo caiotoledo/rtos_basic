@@ -9,22 +9,29 @@
 #include "IMU.h"
 #include "MPU6050.h"
 
+#define SAMPLE_RATE_IMU   500
+
 MPU6050 imu;
-DigitalOut led1(LED1);
 
 void imu_sample(const void *args){
   int16_t accel[3] = { 0 };
+  double fAccel[3] = { 0 };
   int16_t gyro[3] = { 0 };
+  double fGyro[3] = { 0 };
 
   /* Get Accel Data: */
   imu.readAccelData(accel);
-  pc.printf("Accel: %d - %d - %d\n\r", accel[0], accel[1], accel[2]);
+  for (int i = 0; i < 3; ++i) {
+    fAccel[i] = accel[i] * imu.getAres();
+  }
+  pc.printf("Acceleration:\t%.3f\t%.3f\t%.3f\n\r", fAccel[0], fAccel[1], fAccel[2]);
 
   /* Get Gyro Data: */
   imu.readGyroData(gyro);
-  pc.printf("Gyro: %d - %d - %d\n\r", gyro[0], gyro[1], gyro[2]);
-
-  led1 = !led1;
+  for (int i = 0; i < 3; ++i) {
+    fGyro[i] = gyro[i] * imu.getGres();
+  }
+  pc.printf("Gyroscope:\t%.3f\t%.3f\t%.3f\n\r", fGyro[0], fGyro[1], fGyro[2]);
 }
 
 void imu_thread(void){
@@ -41,8 +48,9 @@ void imu_thread(void){
   /* Initialize MPU6050 */
   imu.initMPU6050();
 
+  /* Start IMU Sample Thread Time: */
   RtosTimer imuSample(imu_sample, osTimerPeriodic, (void *)0);
-  imuSample.start(1000);
+  imuSample.start(SAMPLE_RATE_IMU);
 
   Thread::wait(osWaitForever);
 }

@@ -225,7 +225,7 @@ class MPU6050 {
 } 
  
 
-void getGres() {
+float getGres() {
   switch (Gscale)
   {
     // Possible gyro scales (and their register bit settings) are:
@@ -244,9 +244,10 @@ void getGres() {
           gRes = 2000.0/32768.0;
           break;
   }
+  return gRes;
 }
 
-void getAres() {
+float getAres() {
   switch (Ascale)
   {
     // Possible accelerometer scales (and their register bit settings) are:
@@ -265,6 +266,7 @@ void getAres() {
           aRes = 16.0/32768.0;
           break;
   }
+  return aRes;
 }
 
 
