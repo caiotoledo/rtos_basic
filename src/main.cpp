@@ -2,7 +2,7 @@
 
 #include "IMU.h"
 
-Thread tImu;
+Thread tImu(osPriorityRealtime,DEFAULT_STACK_SIZE,0);
 
 int main() {
   char ver[50];
