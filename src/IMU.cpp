@@ -41,8 +41,10 @@ void imu_thread(void){
   /* Verify if MPU6050 is present: */
   char whoami = imu.readByte(MPU6050_ADDRESS, WHO_AM_I_MPU6050);
   if (whoami != 0x68){
-    pc.printf("I SHOULD BE 0x68\n\r");
-    return;
+    while(true){
+      pc.printf("I SHOULD BE 0x68\n\r");
+      Thread::wait(3000);
+    }
   }
 
   /* Initialize MPU6050 */
