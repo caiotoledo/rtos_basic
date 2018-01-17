@@ -25,7 +25,7 @@ unsigned int uiLenMsg = 0;
 
 static funcCommand Cmd2Func(char *szFunc){
   for (unsigned int i = 0; i < lenMapFunc; ++i) {
-    if ( 0 == strcmp(szFunc, mapFunc[i].str) ) {
+    if ( strstr(szFunc, mapFunc[i].str) ) {
       /* Command found! */
       return mapFunc[i].func;
     }
@@ -42,27 +42,34 @@ static int parseCmd(char *str, stCommand *cmd){
   cmd->fValue = 0;
   cmd->eCmdType = eInvalidValue;
 
-  char *pch;
-  pch = strtok(str, ";");
+  if (strstr(str,";")) {
+    char *pch;
+    pch = strtok(str, ";");
 
-  while (pch != NULL) {
-    switch (uiParseCount++) {
-    case 0:
-      cmd->func = Cmd2Func(pch);
-      if (!cmd->func) {
-        return -1;
+    while (pch != NULL) {
+      switch (uiParseCount++) {
+      case 0:
+        cmd->func = Cmd2Func(pch);
+        if (!cmd->func) {
+          return -1;
+        }
+        break;
+      case 1:
+        cmd->eCmdType = (eCommandType) atoi(pch);
+        break;
+      case 2:
+        cmd->fValue = atoff(pch);
+        break;
+      default:
+        break;
       }
-      break;
-    case 1:
-      cmd->eCmdType = (eCommandType) atoi(pch);
-      break;
-    case 2:
-      cmd->fValue = atoff(pch);
-      break;
-    default:
-      break;
+      pch = strtok(NULL, ";");
     }
-    pch = strtok(NULL, ";");
+  } else {
+    cmd->func = Cmd2Func(str);
+    if (!cmd->func) {
+      return -1;
+    }
   }
 
   return 0;
