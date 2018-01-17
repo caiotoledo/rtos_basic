@@ -1,27 +1,49 @@
 #include "Utils.h"
 
 #include "IMU.h"
+#include "USB.h"
 
 #define BLINK_TIME    500
 
 DigitalOut led1(LED1);
-Serial serial(SERIAL_TX, SERIAL_RX, 9600);
+unsigned int ledTime = 500;
 
+Thread tFunc;
 Thread tLED;
 Thread tImu(osPriorityRealtime,DEFAULT_STACK_SIZE,0);
-
-void data_recv(void){
-  char *buf = (char *) malloc( sizeof(char) * (pc.available() + 1) );
-  pc.gets(buf, pc.available()+1);
-  serial.printf("%s", buf);
-  free(buf);
-}
 
 void led_thread(void){
   while(true){
     led1 = !led1;
-    Thread::wait(BLINK_TIME);
+    Thread::wait(ledTime);
   }
+}
+
+void startLedThread(stCommand val){
+  if (val.eCmdType == eSetValue) {
+    if (val.fValue > 0) {
+      ledTime = val.fValue;
+      tLED.start(led_thread);
+      pc.printf("LED Thread Started! BlinkTime %d ms\r\n", ledTime);
+    } else {
+      tLED.terminate();
+      led1 = 0;
+      pc.printf("LED Thread Finish!\r\n");
+    }
+  } else if (val.eCmdType == eGetValue) {
+    bool isRunning = true;
+    if (tLED.get_state() == Thread::Deleted) {
+      isRunning = false;
+    }
+    pc.printf("Thread LED %s\r\n", isRunning ? "Running" : "Stopped", tLED.get_state());
+  }
+
+}
+
+void showVer(stCommand val) {
+  char ver[50];
+  formatVersion(ver);
+  pc.printf("Version %s %s\r\n", PROJECT_NAME, ver);
 }
 
 int main() {
@@ -32,9 +54,12 @@ int main() {
 
   tImu.start(imu_thread);
   tLED.start(led_thread);
+  tFunc.start(commandFuncThread);
+
+  regFunc("version", showVer);
+  regFunc("led", startLedThread);
 
   while (true) {
-    pc.printf("Version %s %s\r\n", PROJECT_NAME, ver);
-    Thread::wait(20000);
+    Thread::wait(osWaitForever);
   }
 }

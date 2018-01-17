@@ -15,9 +15,12 @@
 
 #define PROJECT_NAME  "rtos_basic"
 
+extern Serial serialDebug;
+
+#define LOG(...)    serialDebug.printf(__VA_ARGS__);
+
 extern USBSerial pc;
 
 void formatVersion(char *buildVersion);
-
 
 #endif /* UTILS_H_ */

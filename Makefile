@@ -60,6 +60,7 @@ OBJECTS += USBDevice/targets/TARGET_Freescale/USBHAL_KL25Z.o
 OBJECTS += src/main.o
 OBJECTS += src/Utils.o
 OBJECTS += src/IMU.o
+OBJECTS += src/USB.o
 OBJECTS += mbed-rtos/rtos/Mutex.o
 OBJECTS += mbed-rtos/rtos/RtosTimer.o
 OBJECTS += mbed-rtos/rtos/Semaphore.o

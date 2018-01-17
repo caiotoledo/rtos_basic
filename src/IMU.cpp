@@ -42,7 +42,7 @@ void imu_thread(void){
   char whoami = imu.readByte(MPU6050_ADDRESS, WHO_AM_I_MPU6050);
   if (whoami != 0x68){
     while(true){
-      pc.printf("I SHOULD BE 0x68\n\r");
+      LOG("I SHOULD BE 0x68\n\r");
       Thread::wait(3000);
     }
   }
