@@ -11,7 +11,12 @@
 
 #define SAMPLE_RATE_IMU   500
 
+void imu_sample(const void *args);
+
 MPU6050 imu;
+
+RtosTimer imuSample(imu_sample, osTimerPeriodic, (void *)0);
+bool boIMUSampleRunning = false;
 
 void imu_sample(const void *args){
   int16_t accel[3] = { 0 };
@@ -34,6 +39,27 @@ void imu_sample(const void *args){
   pc.printf("Gyroscope:\t%.3f\t%.3f\t%.3f\n\r", fGyro[0], fGyro[1], fGyro[2]);
 }
 
+void startIMUsample(stCommand val){
+
+  if (val.eCmdType == eSetValue) {
+    if (val.fValue > 0) {
+      pc.printf("Start IMU Sample - For %.2f s\r\n", (float)(val.fValue/1000));
+      imuSample.start(SAMPLE_RATE_IMU);
+      boIMUSampleRunning = true;
+      Thread::wait(val.fValue);
+      boIMUSampleRunning = false;
+      imuSample.stop();
+      pc.printf("Finish IMU Sample\r\n");
+    } else {
+      boIMUSampleRunning = false;
+      imuSample.stop();
+    }
+  } else if (val.eCmdType == eGetValue) {
+    pc.printf("Thread IMU Sample %s\r\n", boIMUSampleRunning ? "Running" : "Stopped");
+  }
+
+}
+
 void imu_thread(void){
   /* use fast (400 kHz) I2C */
   i2c.frequency(400000);
@@ -49,10 +75,6 @@ void imu_thread(void){
 
   /* Initialize MPU6050 */
   imu.initMPU6050();
-
-  /* Start IMU Sample Thread Time: */
-  RtosTimer imuSample(imu_sample, osTimerPeriodic, (void *)0);
-  imuSample.start(SAMPLE_RATE_IMU);
 
   Thread::wait(osWaitForever);
 }

@@ -47,17 +47,17 @@ void showVer(stCommand val) {
 }
 
 int main() {
-  char ver[50];
-  formatVersion(ver);
-
+  /* Enable USB interrupt */
   pc.attach(data_recv);
 
   tImu.start(imu_thread);
   tLED.start(led_thread);
   tFunc.start(commandFuncThread);
 
+  /* Register Commands: */
   regFunc("version", showVer);
   regFunc("led", startLedThread);
+  regFunc("go", startIMUsample);
 
   while (true) {
     Thread::wait(osWaitForever);

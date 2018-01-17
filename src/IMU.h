@@ -9,5 +9,6 @@
 #define IMU_H_
 
 void imu_thread(void);
+void startIMUsample(stCommand val);
 
 #endif /* IMU_H_ */

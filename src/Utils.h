@@ -12,6 +12,7 @@
 #include "rtos.h"
 #include "USBSerial.h"
 #include "I2C.h"
+#include "USB.h"
 
 #define PROJECT_NAME  "rtos_basic"
 

@@ -2,8 +2,9 @@ Commands Syntax:
 "Command;Type;Value"
 
 Commands:
-- "version":	Show Application Version;
-- "led":	Control Led Task and Blink Time. 
+- "version":	Show Application Version 	(Value not used);
+- "led":	Control Led Task and Blink Time	(Value = Blink Time);
+- "go":		Start IMU Sample		(Value = Total Time).
 
 Type:
 - "0": Get Value;
