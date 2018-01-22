@@ -108,6 +108,7 @@ OBJECTS += mbed-rtos/rtx/TARGET_CORTEX_M/rt_Timer.o
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
 INCLUDE_PATHS += -I../src
+INCLUDE_PATHS += -I../src/Filter
 INCLUDE_PATHS += -I../USBDevice
 INCLUDE_PATHS += -I../USBDevice/USBAudio
 INCLUDE_PATHS += -I../USBDevice/USBDevice

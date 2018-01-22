@@ -8,21 +8,26 @@
 #include "Utils.h"
 #include "IMU.h"
 #include "MPU6050.h"
+#include "Filter/ComplFilter.h"
 
 #define SAMPLE_RATE_IMU   500
 
 void imu_sample(const void *args);
 
 MPU6050 imu;
+ComplFilter xComplFilter;
 
 RtosTimer imuSample(imu_sample, osTimerPeriodic, (void *)0);
 bool boIMUSampleRunning = false;
+unsigned int countSample = 0;
 
 void imu_sample(const void *args){
   int16_t accel[3] = { 0 };
   double fAccel[3] = { 0 };
   int16_t gyro[3] = { 0 };
   double fGyro[3] = { 0 };
+
+  double dAngleCompl = 0;
 
   /* Get Accel Data: */
   imu.readAccelData(accel);
@@ -37,6 +42,14 @@ void imu_sample(const void *args){
     fGyro[i] = gyro[i] * imu.getGres();
   }
   pc.printf("Gyroscope:\t%.3f\t%.3f\t%.3f\n\r", fGyro[0], fGyro[1], fGyro[2]);
+
+  if ( 0 == countSample++ ) {
+    dAngleCompl = xComplFilter.setInitAccel(fAccel);
+  } else {
+    dAngleCompl = xComplFilter.getComplFilterAngle(fAccel, fGyro[Axis_Z], SAMPLE_RATE_IMU/1000);
+  }
+
+  pc.printf("Angle Compl\t%.3f\n\r", dAngleCompl);
 }
 
 void startIMUsample(stCommand val){
@@ -49,6 +62,7 @@ void startIMUsample(stCommand val){
       Thread::wait(val.fValue);
       boIMUSampleRunning = false;
       imuSample.stop();
+      countSample = 0;
       pc.printf("Finish IMU Sample\r\n");
     } else {
       boIMUSampleRunning = false;
