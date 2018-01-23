@@ -58,6 +58,7 @@ int main() {
   regFunc("version", showVer);
   regFunc("led", startLedThread);
   regFunc("go", startIMUsample);
+  regFunc("sample", setIMUSampleRate);
 
   while (true) {
     Thread::wait(osWaitForever);

@@ -19,7 +19,8 @@ ComplFilter xComplFilter;
 
 RtosTimer imuSample(imu_sample, osTimerPeriodic, (void *)0);
 bool boIMUSampleRunning = false;
-unsigned int countSample = 0;
+unsigned int uiCountSample = 0;
+unsigned int uiSampleRateIMU = SAMPLE_RATE_IMU;
 
 void imu_sample(const void *args){
   int16_t accel[3] = { 0 };
@@ -43,7 +44,7 @@ void imu_sample(const void *args){
   }
   pc.printf("Gyroscope:\t%.3f\t%.3f\t%.3f\n\r", fGyro[0], fGyro[1], fGyro[2]);
 
-  if ( 0 == countSample++ ) {
+  if ( 0 == uiCountSample++ ) {
     dAngleCompl = xComplFilter.setInitAccel(fAccel);
   } else {
     dAngleCompl = xComplFilter.getComplFilterAngle(fAccel, fGyro[Axis_Z], SAMPLE_RATE_IMU/1000);
@@ -57,12 +58,12 @@ void startIMUsample(stCommand val){
   if (val.eCmdType == eSetValue) {
     if (val.fValue > 0) {
       pc.printf("Start IMU Sample - For %.2f s\r\n", (float)(val.fValue/1000));
-      imuSample.start(SAMPLE_RATE_IMU);
+      imuSample.start(uiSampleRateIMU);
       boIMUSampleRunning = true;
       Thread::wait(val.fValue);
       boIMUSampleRunning = false;
       imuSample.stop();
-      countSample = 0;
+      uiCountSample = 0;
       pc.printf("Finish IMU Sample\r\n");
     } else {
       boIMUSampleRunning = false;
@@ -70,6 +71,21 @@ void startIMUsample(stCommand val){
     }
   } else if (val.eCmdType == eGetValue) {
     pc.printf("Thread IMU Sample %s\r\n", boIMUSampleRunning ? "Running" : "Stopped");
+  }
+
+}
+
+void setIMUSampleRate(stCommand val){
+
+  if (val.eCmdType == eSetValue) {
+    if (val.fValue > 0) {
+      uiSampleRateIMU = val.fValue;
+      pc.printf("IMU Task Sample Rate: %.3f ms\r\n", ((float)uiSampleRateIMU/1000));
+    } else {
+      pc.printf("Invalid Value");
+    }
+  } else if (val.eCmdType == eGetValue) {
+    pc.printf("IMU Task Sample Rate: %.3f ms\r\n", ((float)uiSampleRateIMU/1000));
   }
 
 }
